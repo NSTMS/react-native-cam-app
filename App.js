@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native'
 import { ActivityIndicator } from 'react-native';
-import {Styles} from "r./static/styles/styles" 
-
+import {Styles} from "./static/styles/styles" 
+import * as Font from "expo-font";
 const Stack = createNativeStackNavigator();
 import MainView from './components/MainView';
 import GalleryView from './components/GalleryView';

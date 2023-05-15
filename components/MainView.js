@@ -1,6 +1,5 @@
 import { SafeAreaView, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import * as Font from "expo-font";
 import {Styles,Fonts,FontSizes,FontAlignments} from "../static/styles/styles" 
 
 export default function MainView({navigation}){
