@@ -1,57 +1,60 @@
-import { SafeAreaView, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { ActivityIndicator } from 'react-native';
-import * as Font from "expo-font";
-import { Camera } from "expo-camera";
+import React, { useState, useEffect,useRef } from 'react';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { Camera } from 'expo-camera';
+import Clickable from './Clickable';
+import * as MediaLibrary from "expo-media-library";
 
-export default function CameraView({navigation}){
-    const [hasCameraPermission, changeCameraPermission] = useState(false)
-    const [camera, setCamera] = useState({})
-    useEffect(()=>{
-        (async ()=>{
-            let { status } = await Camera.requestCameraPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('brak uprawnień do kamery')
-                changeCameraPermission(false)
-            }
-            else {
-                changeCameraPermission(true)
-                setCamera({type:Camera.Constants.Type.back})
-            }
-            // this.setState({ hasCameraPermission: status == 'granted' });
-
-        })()
-    },[])
-
-    const changeFrontBackCamera = () =>{
-        setCamera({...camera,
-            type: (camera.type == Camera.Constants.Type.back)? Camera.Constants.Type.front:Camera.Constants.Type.back,
-            
-        })
+export default function CameraView() {
+    const [hasPermission, setHasPermission] = useState(null);
+    const [type, setType] = useState(Camera.Constants.Type.back);
+    const cameraRef = useRef()
+    useEffect(() => {
+      (async () => {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        setHasPermission(status === 'granted');
+      })();
+    }, []);
+  
+    if (hasPermission === null) {
+      return <View />;
     }
-    const takePicture = () =>{
+    if (hasPermission === false) {
+      return <Text>No access to camera</Text>;
+    }
+  
+    const takePicture = async () => {
+      if (cameraRef.current) {
+        const options = { quality: 1, base64: true };
+        const foto = await cameraRef.current.takePictureAsync(options);
+        let asset = await MediaLibrary.createAssetAsync(foto.uri); 
+        Alert.alert(JSON.stringify(asset, null, 4))
 
+    }
+    };
+    const changeCameraFrontBack = () =>{
+        setType(
+            type === Camera.Constants.Type.back
+              ? Camera.Constants.Type.front
+              : Camera.Constants.Type.back
+          );
     }
     return (
-        <SafeAreaView>
-            {
-                (hasCameraPermission)?
-                <Text>Nie masz zezwolenia do korzystania z kamery telefonu</Text>
-                :
-                <View style={{ flex: 1 }}>
-                <Camera
-                    ref={ref => {
-                        this.camera = ref; // Uwaga: referencja do kamery używana później
-                    }}
-                    style={{ flex: 1 }}
-                    type={this.state.type}>
-                    <View style={{ flex: 1 }}>
-                        {/* tutaj wstaw buttony do obsługi kamery */}
-                    </View>
-                </Camera>
-            </View>
-        
-            }
-        </SafeAreaView>
-    )
-}
+      <View style={{ flex: 1 }}>
+        <Camera style={{ flex: 7 }} type={type} ref={cameraRef}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'transparent',
+              flexDirection: 'row',
+            }}>
+          </View>
+        </Camera>
+        <View style={{ flex: 1 }}></View>
+
+        <Clickable text={"[change camera]"} handlePress={changeCameraFrontBack}/>
+        <Clickable text={"[take picture]"} handlePress={takePicture}/>
+
+      </View>
+    );
+  }
+  

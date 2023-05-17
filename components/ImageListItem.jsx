@@ -18,7 +18,6 @@ export default function ImageListItem({navigation, item,index, setPhotos, showBi
                         dat[index].selected = !dat[index].selected
                         return [...dat]
                     })
-                    console.log("siema")
                 }
                 else if(timing.current == 0) showBigPhoto(item)
             },100)

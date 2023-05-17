@@ -10,7 +10,6 @@ export default function ImageView({navigation, route}){
     const handleShareClick = async () =>
     {
         Sharing.isAvailableAsync().then(yes=>{
-            
             if(yes)
             {
                 // ogólnie to działa ale na moim telefonie nie działa (approved)
