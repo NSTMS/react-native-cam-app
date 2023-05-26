@@ -1,4 +1,4 @@
-import { Alert, SafeAreaView, Text, ActivityIndicator, Dimensions, FlatList, View } from 'react-native'
+import { Alert, SafeAreaView, Text, ActivityIndicator, Dimensions, FlatList, View, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as Font from "expo-font";
 import { Styles, Fonts, GalleryViewStyles } from "../static/styles/styles"
@@ -51,12 +51,13 @@ export default function GalleryView({ navigation }) {
     return (
         <>
             {
-                visibility ?
+                !visibility ?
                     <SafeAreaView>
                         <ActivityIndicator size="large" color="#0000ff" />
                     </SafeAreaView>
                     :
                     <SafeAreaView>
+                        <StatusBar />
                         <View style={{flexDirection:"row", gap:20, justifyContent:"center"}}>
                         <Clickable text={"[columns]"} handlePress={changeNumberOfColumns} styles={[Components.Button]} />
                         <Clickable text={"[camera]"} handlePress={() => navigation.navigate("camera")}  styles={[Components.Button]} />
@@ -68,7 +69,8 @@ export default function GalleryView({ navigation }) {
                             key={columns}
                             keyExtractor={item=>item.id}
                             renderItem={({ item,index }) => <ImageListItem navigation={navigation} item={{ ...item, elements: columns, dimentions:dimentions}} setPhotos={setPhotos} showBigPhoto={showBigPhoto} index={index} />}
-                        ></FlatList>
+                            style={{marginBottom:90}}
+                       ></FlatList>
                     </SafeAreaView>
             }
         </>
