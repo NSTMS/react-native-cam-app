@@ -1,7 +1,6 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { View, Text, ScrollView , Alert ,StyleSheet,Animated,Dimensions,StatusBar} from 'react-native';
 import { Camera } from 'expo-camera';
-import Clickable from './Clickable';
 import * as MediaLibrary from "expo-media-library";
 import { BackgroudColors, Components, Fonts, FontSizes, Styles } from '../static/styles/styles';
 import ClickableImage from './ClickableImage';

@@ -26,7 +26,6 @@ export default function GalleryView({ navigation }) {
         data.assets = data.assets.sort((a,b)=> b.modificationTime - a.modificationTime)
         setPhotos(data.assets)
         setVisibility(true)
-
     }
     useEffect(() => {
         (async () => {

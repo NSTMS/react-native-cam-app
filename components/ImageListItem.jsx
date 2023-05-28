@@ -1,7 +1,5 @@
-import { SafeAreaView, Text ,Image,StyleSheet,View} from 'react-native'
-import React, { useEffect, useState,useRef } from 'react'
-
-import * as Font from "expo-font";
+import { Text ,Image,StyleSheet,View} from 'react-native'
+import React, { useRef } from 'react'
 import { FontColors, FontSizes, Fonts } from '../static/styles/styles';
 
 export default function ImageListItem({navigation, item,index, setPhotos, showBigPhoto}){
@@ -59,7 +57,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-
     },
     image:{
         borderRadius: 20,
