@@ -40,6 +40,9 @@ const FontSizes = StyleSheet.create({
     SmallFontSize: {
         fontSize: 15,
     },
+    MediumSmallFontSize :{
+        fontSize : 12
+    },
     XSmallFontSize: {
         fontSize: 10,
     }

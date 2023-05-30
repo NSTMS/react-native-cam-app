@@ -47,7 +47,8 @@ export default function CameraView({navigation}) {
         availableRatios.push(...sizes)
       }
       setCameraSettings({
-        ratios: [...availableRatios],
+        // ratios: [...availableRatios],
+        ratios: [...ratios],
         whiteBalances : Camera.Constants.WhiteBalance,
         flashMode : Camera.Constants.FlashMode
       })
@@ -140,6 +141,6 @@ export default function CameraView({navigation}) {
         width:160,
         textAlign:"center",
         padding:10,
-        paddingTop:70,
+        paddingTop:100,
     }
 });

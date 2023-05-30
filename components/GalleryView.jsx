@@ -17,13 +17,13 @@ export default function GalleryView({ navigation }) {
     {
         setVisibility(false)
         let data = await MediaLibrary.getAssetsAsync({
-            first: 200,           // ilość pobranych assetów
+            first: 100,           // ilość pobranych assetów
             mediaType: 'photo'    // typ pobieranych danych, photo jest domyślne
         })
         data.assets.map((el,i)=>{
             el.selected = false;
         })
-        data.assets = data.assets.sort((a,b)=> b.modificationTime - a.modificationTime)
+        // data.assets = data.assets.sort((a,b)=> b.modificationTime - a.modificationTime)
         setPhotos(data.assets)
         setVisibility(true)
     }
@@ -67,7 +67,7 @@ export default function GalleryView({ navigation }) {
                             numColumns={columns}
                             key={columns}
                             keyExtractor={item=>item.id}
-                            renderItem={({ item,index }) => <ImageListItem navigation={navigation} item={{ ...item, elements: columns, dimentions:dimentions}} setPhotos={setPhotos} showBigPhoto={showBigPhoto} index={index} />}
+                            renderItem={({ item,index }) => <ImageListItem navigation={navigation} item={{ ...item, elements: columns, dimentions:dimentions}} setPhotos={setPhotos} photos={photos} showBigPhoto={showBigPhoto} index={index} />}
                             style={{marginBottom:90}}
                        ></FlatList>
                     </SafeAreaView>
