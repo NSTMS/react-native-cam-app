@@ -2,12 +2,12 @@ import { Text ,Image,StyleSheet,View} from 'react-native'
 import React, { useRef } from 'react'
 import { FontAlignments, FontColors, FontSizes, Fonts } from '../static/styles/styles';
 
-export default function ImageListItem({navigation, item,index,photos,
-     setPhotos, showBigPhoto}){
+export default function ImageListItem({navigation, item,index,photos,setPhotos, showBigPhoto}){
 
     const timing = useRef(-1);
     return (
         <View 
+        style={{flex:1,gap:10, justifyContent:"center", alignItems:"center"}}
            onTouchStart={()=>{
             timing.current = 1;
             setTimeout(()=>{
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         backgroundColor: 'black',
         opacity: 0.6,
-        height: '100%',
-        width: '100%',
+        height: '90%',
+        width: '90%',
         borderRadius: 20,
         display: 'flex',
         justifyContent: 'center',
@@ -70,11 +70,10 @@ const styles = StyleSheet.create({
      right:0,
      left:0,
      bottom: 0,
-    margin:5
+     margin:5
     },
     image:{
         borderRadius: 20,
-        margin:5
     }
 
 })

@@ -1,19 +1,24 @@
 import React, { useState, useEffect,useRef } from 'react';
-import { View, Text, ScrollView , Alert ,StyleSheet,Animated,Dimensions,StatusBar} from 'react-native';
+import { View, Text, ScrollView , Alert ,StyleSheet,Animated,Dimensions,StatusBar,BackHandler ,ToastAndroid} from 'react-native';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from "expo-media-library";
 import { BackgroudColors, Components, Fonts, FontSizes, Styles } from '../static/styles/styles';
 import ClickableImage from './ClickableImage';
 const screenHeight =  Dimensions.get('window').height 
+import RadioButtonGroup from './RadioButtonGroup';
 export default function CameraView({navigation}) {
     const [hasPermission, setHasPermission] = useState(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
     const [animatedPos, setAnimatedPos] = useState(new Animated.Value(screenHeight))
     const [hidden, setHidden] = useState(true)
+    const [currentFlashLightMode, setCurrentFlashLightMode] = useState(Camera.Constants.FlashMode.Torch)
+    const [currentWhiteBalance, setCurrentWhiteBalance] = useState(Camera.Constants.WhiteBalance.Auto)  
+    const [currentRatio, setCurrentRatio] = useState({sizes:[],ratio:null})
+    const [currentResulution, setCurrentResulution] = useState(null)
     const [cameraSettings, setCameraSettings] = useState({
-      whiteBalances: {},
+      whiteBalances: [],
       ratios :[],
-      flashMode: {}
+      flashMode: []
     })
     const cameraRef = useRef()
     useEffect(() => {
@@ -21,6 +26,24 @@ export default function CameraView({navigation}) {
         const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
       })();
+      // const backAction = () => {
+      //   console.log("back")
+      //     if (hidden) {
+      //       navigation.goBack()
+      //       return true;
+      //     }
+      //     else{
+      //       setHidden(true)
+      //       return false;
+      //     }
+      // }
+      // const backHandler = BackHandler.addEventListener(
+      //   'hardwareBackPress',
+      //   backAction,
+      // );
+  
+      // return () => backHandler.remove();
+
     }, []);
   
     if (hasPermission === null) {
@@ -29,13 +52,18 @@ export default function CameraView({navigation}) {
     if (hasPermission === false) {
       return <Text>No access to camera</Text>;
     }
-  
+
     const takePicture = async () => {
       if (cameraRef.current) {
         const options = { quality: 1, base64: true };
         const foto = await cameraRef.current.takePictureAsync(options);
         let asset = await MediaLibrary.createAssetAsync(foto.uri); 
-        Alert.alert(JSON.stringify(asset, null, 4))
+        // Alert.alert(JSON.stringify(asset, null, 4))
+        ToastAndroid.showWithGravity(
+          'Photo has been taken',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER,
+        );
     }
     };
     const getSizes = async () =>{
@@ -44,15 +72,20 @@ export default function CameraView({navigation}) {
       for(const ratio of ratios)
       {
         const sizes = await cameraRef.current.getAvailablePictureSizesAsync(ratio);
-        availableRatios.push(...sizes)
+        availableRatios.push({ratio:ratio,sizes:sizes})
       }
+      setCurrentRatio(availableRatios[0])
+      setCurrentResulution(currentRatio.sizes[0])
+
+      const whiteBalances = Object.keys(Camera.Constants.WhiteBalance)
+      const flashlightModes =  Object.keys(Camera.Constants.FlashMode)
       setCameraSettings({
-        // ratios: [...availableRatios],
-        ratios: [...ratios],
-        whiteBalances : Camera.Constants.WhiteBalance,
-        flashMode : Camera.Constants.FlashMode
+        ratios: [...availableRatios],
+        whiteBalances : whiteBalances,
+        flashMode : flashlightModes,
       })
     }
+
     const changeCameraFrontBack = () =>{
         setType(
             type === Camera.Constants.Type.back
@@ -74,6 +107,22 @@ export default function CameraView({navigation}) {
       setHidden(!hidden)
 
     }
+
+
+    const changeWhiteBalance = (value) =>{  
+      setCurrentWhiteBalance(Camera.Constants.FlashMode[value])      
+    }
+    const changeFlashLightMode = (value) =>{
+      setCurrentFlashLightMode(Camera.Constants.FlashMode[value])      
+    }
+    const changeRatio = async (value) =>{
+      const sizes = await cameraRef.current.getAvailablePictureSizesAsync(value);
+      setCurrentRatio({ratio: value, sizes:sizes})
+      setCurrentResulution(currentRatio.sizes[0])
+    }
+    const changeResulution = (value) =>{
+      setCurrentResulution(currentRatio.sizes[currentRatio.sizes.indexOf(value)])
+    }
     return (
       <View style={{ flex: 4 }}>
         <StatusBar />
@@ -82,6 +131,10 @@ export default function CameraView({navigation}) {
           type={type} 
           ref={cameraRef}
           onCameraReady={() => getSizes()}
+          ratio={currentRatio.ratio}
+          whiteBalance={currentWhiteBalance}
+          pictureSize={currentResulution}
+          flashMode={currentFlashLightMode}
           >
           <View
             style={{
@@ -97,32 +150,17 @@ export default function CameraView({navigation}) {
            <ClickableImage uri={"https://cdn-icons-png.flaticon.com/512/3524/3524659.png"}  handlePress={toggleAnimatedView} styles={ [Styles.CenteredView,Components.CricleButton]}/>
         </View>
         <Animated.View
-                    style={[styles.animatedView,
-                        {
-                            transform: [
-                                { translateY: animatedPos}
-                            ]
-                        }]} >
-                      <ScrollView>
-                      <View>
-                        <Text style={[FontSizes.SmallFontSize, Fonts.bold]}>WhiteBalance</Text>
-                        {
-                          Object.keys(cameraSettings.whiteBalances).map(key=>{return <Text>{key}</Text>})
-                        }
-                      </View>
-                      <View>
-                        <Text style={[FontSizes.SmallFontSize, Fonts.bold]}>FlashMode</Text>
-                        {
-                          Object.keys(cameraSettings.flashMode).map(key=>{return <Text>{key}</Text>})
-                        }
-                      </View>
-                      <View>
-                        <Text style={[FontSizes.SmallFontSize, Fonts.bold]}>Ratios</Text>
-                        {
-                          cameraSettings.ratios.map(r=> {return <Text>{r}</Text>})
-                        }
-                      </View>
-                      </ScrollView>
+            style={[styles.animatedView,
+                {
+                    transform: [
+                        { translateY: animatedPos}
+                    ]
+                }]} >
+              <ScrollView>
+                <RadioButtonGroup valueChange={changeFlashLightMode} buttons={cameraSettings.flashMode} header={"FlashMode"} />
+                <RadioButtonGroup valueChange={changeRatio} buttons={cameraSettings.ratios.map((ratio)=>ratio.ratio)} header={"Ratios"} />
+                <RadioButtonGroup valueChange={changeResulution} buttons={currentRatio.sizes} header={"Resolutions"}/>
+              </ScrollView>
                     
         </Animated.View>
       </View>
@@ -136,7 +174,7 @@ export default function CameraView({navigation}) {
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: "#00ff00",
+        backgroundColor: "#415a77",
         height: screenHeight,
         width:160,
         textAlign:"center",
