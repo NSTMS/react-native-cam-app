@@ -1,6 +1,8 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { View, Text, ScrollView , Alert ,StyleSheet,Animated,Dimensions,StatusBar,BackHandler ,ToastAndroid} from 'react-native';
 import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+
 import * as MediaLibrary from "expo-media-library";
 import { BackgroudColors, Components, Fonts, FontSizes, Styles } from '../static/styles/styles';
 import ClickableImage from './ClickableImage';
@@ -21,28 +23,27 @@ export default function CameraView({navigation}) {
       flashMode: []
     })
     const cameraRef = useRef()
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      ()=>{
+        if (hidden) {
+          navigation.navigate("gallery")
+          return false;
+        }
+        else{
+          setHidden(!hidden)
+          toggleAnimatedView()
+          return true;
+        }
+      });    
+
     useEffect(() => {
       (async () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
       })();
-      // const backAction = () => {
-      //   console.log("back")
-      //     if (hidden) {
-      //       navigation.goBack()
-      //       return true;
-      //     }
-      //     else{
-      //       setHidden(true)
-      //       return false;
-      //     }
-      // }
-      // const backHandler = BackHandler.addEventListener(
-      //   'hardwareBackPress',
-      //   backAction,
-      // );
   
-      // return () => backHandler.remove();
+      return () => backHandler.remove();
 
     }, []);
   
@@ -107,8 +108,6 @@ export default function CameraView({navigation}) {
       setHidden(!hidden)
 
     }
-
-
     const changeWhiteBalance = (value) =>{  
       setCurrentWhiteBalance(Camera.Constants.FlashMode[value])      
     }
@@ -123,6 +122,25 @@ export default function CameraView({navigation}) {
     const changeResulution = (value) =>{
       setCurrentResulution(currentRatio.sizes[currentRatio.sizes.indexOf(value)])
     }
+    const openPictureEditor = async()=>{
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+     });
+     if (!result.cancelled) {
+
+
+
+      ToastAndroid.showWithGravity("PICKER", ToastAndroid.LONG, ToastAndroid.CENTER )
+      // formdata
+      // fetch
+              
+   }
+    }
+
+
     return (
       <View style={{ flex: 4 }}>
         <StatusBar />
@@ -144,10 +162,11 @@ export default function CameraView({navigation}) {
             }}>
           </View>
         </Camera>
-        <View style={{ flex:3, flexDirection:"row",alignItems:"center", justifyContent:"center",gap:20 }}>
+        <View style={{ flex:2, flexDirection:"row",alignItems:"center", justifyContent:"center",gap:10 }}>
           <ClickableImage uri={"https://icons.veryicon.com/png/o/miscellaneous/icon-8/another-change-4.png"} handlePress={changeCameraFrontBack} styles={ [Styles.CenteredView,Components.CricleButton]}/>
            <ClickableImage uri={"https://cdn-icons-png.flaticon.com/512/32/32339.png?w=360"}  handlePress={takePicture} styles={ [Styles.CenteredView,Components.CricleButton]}/>
            <ClickableImage uri={"https://cdn-icons-png.flaticon.com/512/3524/3524659.png"}  handlePress={toggleAnimatedView} styles={ [Styles.CenteredView,Components.CricleButton]}/>
+          <ClickableImage uri={"https://cdn-icons-png.flaticon.com/512/5277/5277838.png"}  handlePress={openPictureEditor} styles={ [Styles.CenteredView,Components.CricleButton]}/>
         </View>
         <Animated.View
             style={[styles.animatedView,
@@ -158,6 +177,7 @@ export default function CameraView({navigation}) {
                 }]} >
               <ScrollView>
                 <RadioButtonGroup valueChange={changeFlashLightMode} buttons={cameraSettings.flashMode} header={"FlashMode"} />
+                <RadioButtonGroup valueChange={changeWhiteBalance} buttons={cameraSettings.whiteBalances} header={"WhiteBalance"} />
                 <RadioButtonGroup valueChange={changeRatio} buttons={cameraSettings.ratios.map((ratio)=>ratio.ratio)} header={"Ratios"} />
                 <RadioButtonGroup valueChange={changeResulution} buttons={currentRatio.sizes} header={"Resolutions"}/>
               </ScrollView>
@@ -179,6 +199,7 @@ export default function CameraView({navigation}) {
         width:160,
         textAlign:"center",
         padding:10,
+        opacity:0.9,
         paddingTop:100,
     }
 });

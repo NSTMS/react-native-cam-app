@@ -1,10 +1,12 @@
-import { Alert, SafeAreaView, Text, ActivityIndicator, Dimensions, FlatList, View, StatusBar } from 'react-native'
+import { Alert, SafeAreaView, Text, ActivityIndicator, Dimensions, FlatList, View, StatusBar, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as Font from "expo-font";
 import { Styles, Fonts, GalleryViewStyles } from "../static/styles/styles"
 import * as MediaLibrary from "expo-media-library";
 import ImageListItem from "./ImageListItem"
 import Clickable from "./Clickable"
+const IP = "192.168.0.24"
+const PORT = 3000
 const dimentions = Dimensions.get('screen')
 import { useIsFocused } from '@react-navigation/native';
 import {Components} from "../static/styles/styles"
@@ -44,8 +46,18 @@ export default function GalleryView({ navigation }) {
         await MediaLibrary.deleteAssetsAsync(photos.filter(p => p.selected))
         await loadData()
     }
+    const uploadSelectedImages = () =>{
+
+        //photos.filter(p => p.selected)
+        ToastAndroid.showWithGravity(
+            'Photos uploaded',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );        
+    }
+
     const showBigPhoto = (item) =>{
-        navigation.navigate("image",{data: item})
+        navigation.navigate("image",{data: item, port:PORT, ip: IP})
     }
     return (
         <>
@@ -57,10 +69,11 @@ export default function GalleryView({ navigation }) {
                     :
                     <SafeAreaView>
                         <StatusBar />
-                        <View style={{flexDirection:"row", gap:20, justifyContent:"center"}}>
+                        <View style={{flexDirection:"row", justifyContent:"center"}}>
                         <Clickable text={"[columns]"} handlePress={changeNumberOfColumns} styles={[Components.Button]} />
                         <Clickable text={"[camera]"} handlePress={() => navigation.navigate("camera")}  styles={[Components.Button]} />
                         <Clickable text={"[delete]"} handlePress={deleteSelectedImages}  styles={[Components.Button]} />
+                        <Clickable text={"[upload]"} handlePress={uploadSelectedImages}  styles={[Components.Button]} />
                         </View>
                         <FlatList
                             data={photos}
