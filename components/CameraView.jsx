@@ -109,7 +109,7 @@ export default function CameraView({navigation}) {
 
     }
     const changeWhiteBalance = (value) =>{  
-      setCurrentWhiteBalance(Camera.Constants.FlashMode[value])      
+      setCurrentWhiteBalance(Camera.Constants.WhiteBalance[value])      
     }
     const changeFlashLightMode = (value) =>{
       setCurrentFlashLightMode(Camera.Constants.FlashMode[value])      

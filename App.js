@@ -10,6 +10,7 @@ import MainView from './components/MainView';
 import GalleryView from './components/GalleryView';
 import CameraView from './components/CameraView';
 import ImageView from './components/ImageView';
+import SettingsView from './components/SettingsView';
 
 export default function App() {
   const [visibility, setVislibility] = useState(false)
@@ -37,6 +38,7 @@ export default function App() {
               <Stack.Screen name="gallery" component={GalleryView} />
               <Stack.Screen name="camera" component={CameraView} />
               <Stack.Screen name="image" component={ImageView} />
+              <Stack.Screen name="settings" component={SettingsView} />
             </Stack.Navigator>
           </NavigationContainer>
           :

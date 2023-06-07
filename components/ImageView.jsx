@@ -6,7 +6,7 @@ import { BackgroudColors, FontAlignments, Fonts, FontSizes, Styles } from '../st
 import Clickable from './Clickable';
 import { Components } from '../static/styles/styles';
 export default function ImageView({navigation, route}){
-    const {data,ip,port} = route.params
+    const {data,IP,PORT} = route.params
 
     const handleShareClick = async () =>
     {
@@ -27,7 +27,7 @@ export default function ImageView({navigation, route}){
     }
     const handleUploadClick =() =>{
         ToastAndroid.showWithGravity(
-            "https://" + ip + ":" + port, 
+            "http://" + IP + ":" + PORT, 
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           );  

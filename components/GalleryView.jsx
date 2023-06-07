@@ -1,16 +1,16 @@
 import { Alert, SafeAreaView, Text, ActivityIndicator, Dimensions, FlatList, View, StatusBar, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import * as Font from "expo-font";
 import { Styles, Fonts, GalleryViewStyles } from "../static/styles/styles"
 import * as MediaLibrary from "expo-media-library";
 import ImageListItem from "./ImageListItem"
 import Clickable from "./Clickable"
-const IP = "192.168.0.24"
-const PORT = 3000
+import * as SecureStore from 'expo-secure-store';
 const dimentions = Dimensions.get('screen')
 import { useIsFocused } from '@react-navigation/native';
 import {Components} from "../static/styles/styles"
 export default function GalleryView({ navigation }) {
+    const [ip, setip] = useState("192.168.0.0")
+    const [PORT, setPORT] = useState("3000")
     const [photos, setPhotos] = useState([])
     const isFocused = useIsFocused();
     const [columns, setColumns] = useState(4)
@@ -29,6 +29,13 @@ export default function GalleryView({ navigation }) {
         setPhotos(data.assets)
         setVisibility(true)
     }
+    const getItem = async(key) =>{
+        await SecureStore.getItemAsync(key);
+     }
+     const saveItem = async (key, value) =>{
+        await SecureStore.setItemAsync(key, value);
+     }
+  
     useEffect(() => {
         (async () => {
             let { status } = await MediaLibrary.requestPermissionsAsync();
@@ -37,6 +44,16 @@ export default function GalleryView({ navigation }) {
             }
             else {
                 if(isFocused) loadData()
+            }
+            console.log(ip, PORT)
+
+            if(await getItem('ip') == undefined || await getItem('PORT') == undefined)
+            {
+                await saveItem('ip', ip)
+                await saveItem('PORT', PORT)
+                setip(await getItem('ip'))
+                setPORT(await getItem('PORT'))
+                console.log(ip,PORT)
             }
         })()
     }, [isFocused])
@@ -57,7 +74,7 @@ export default function GalleryView({ navigation }) {
     }
 
     const showBigPhoto = (item) =>{
-        navigation.navigate("image",{data: item, port:PORT, ip: IP})
+        navigation.navigate("image",{data: item, ip, PORT})
     }
     return (
         <>
@@ -69,11 +86,12 @@ export default function GalleryView({ navigation }) {
                     :
                     <SafeAreaView>
                         <StatusBar />
-                        <View style={{flexDirection:"row", justifyContent:"center"}}>
-                        <Clickable text={"[columns]"} handlePress={changeNumberOfColumns} styles={[Components.Button]} />
-                        <Clickable text={"[camera]"} handlePress={() => navigation.navigate("camera")}  styles={[Components.Button]} />
-                        <Clickable text={"[delete]"} handlePress={deleteSelectedImages}  styles={[Components.Button]} />
-                        <Clickable text={"[upload]"} handlePress={uploadSelectedImages}  styles={[Components.Button]} />
+                        <View style={{flexDirection:"row", justifyContent:"center", gap:10, marginBottom:10, marginTop:10}}>
+                            <Clickable text={"[cols]"} handlePress={changeNumberOfColumns} styles={[Components.Button]} />
+                            <Clickable text={"[camera]"} handlePress={() => navigation.navigate("camera")}  styles={[Components.Button]} />
+                            <Clickable text={"[delete]"} handlePress={deleteSelectedImages}  styles={[Components.Button]} />
+                            <Clickable text={"[upload]"} handlePress={uploadSelectedImages}  styles={[Components.Button]} />
+                            <Clickable text={"[sett]"} handlePress={()=>navigation.navigate("settings")}  styles={[Components.Button]} />
                         </View>
                         <FlatList
                             data={photos}

@@ -5,6 +5,13 @@ const Styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    Row:{
+        flexDirection:"row",
+        justifyContent: "center",
+        alignItems: "center",
+        margin:20,
+        gap:10
     }
 })
 
@@ -152,7 +159,6 @@ const Components = StyleSheet.create({
         backgroundColor:"#415a77",
         color:"#fcfcfc",
         padding:10,
-        margin:20,
         borderRadius:10,
 
     },
