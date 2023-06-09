@@ -2,7 +2,7 @@ import React, { useState, useEffect,useRef } from 'react';
 import { View, Text, ScrollView , Alert ,StyleSheet,Animated,Dimensions,StatusBar,BackHandler ,ToastAndroid} from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-
+import * as SecureStore from 'expo-secure-store';
 import * as MediaLibrary from "expo-media-library";
 import { BackgroudColors, Components, Fonts, FontSizes, Styles } from '../static/styles/styles';
 import ClickableImage from './ClickableImage';
@@ -129,13 +129,28 @@ export default function CameraView({navigation}) {
         aspect: [4, 3],
         quality: 1,
      });
-     if (!result.cancelled) {
-
-
-
-      ToastAndroid.showWithGravity("PICKER", ToastAndroid.LONG, ToastAndroid.CENTER )
-      // formdata
-      // fetch
+     if (!result.canceled) {
+      //do sth
+      console.log(result.assets[0].uri)
+      const name = result.assets[0].uri.slice(result.assets[0].uri.lastIndexOf("/")+1)      
+      const form = new FormData();
+      const ip = await SecureStore.getItemAsync("IP")
+      const port = await SecureStore.getItemAsync("PORT")
+      form.append('photo', {
+          uri: result.assets[0].uri,
+          type: 'image/*',
+          name: name
+      });
+      fetch(`http://${ip}:${port}/upload`, {
+          method: 'POST',
+          body: form
+      }).then(() => {
+          ToastAndroid.showWithGravity(
+              "uploaded",
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER,
+          )
+      })
               
    }
     }
